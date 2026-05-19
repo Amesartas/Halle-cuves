@@ -11,7 +11,7 @@ export async function GET() {
     .order('stand_name')
 
   if (error) {
-    return NextResponse.json({ error: 'Erreur base de données' }, { status: 500 })
+    return NextResponse.json({ error: error.message, code: error.code }, { status: 500 })
   }
 
   const rows = (data ?? []).map((row) => ({
