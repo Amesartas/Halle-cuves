@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import supabase from '@/lib/supabase'
+import { getSupabase } from '@/lib/supabase'
+
+export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
   const auth = request.headers.get('authorization')
@@ -7,7 +9,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
   }
 
-  const { error } = await supabase
+  const { error } = await getSupabase()
     .from('stands')
     .update({ plat: null, prix: null, submitted_at: null })
     .not('id', 'is', null)

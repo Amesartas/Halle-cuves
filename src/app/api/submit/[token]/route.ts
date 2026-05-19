@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import supabase from '@/lib/supabase'
+import { getSupabase } from '@/lib/supabase'
+
+export const dynamic = 'force-dynamic'
 
 const MAX_CHARS = 60
 
 function extractFields(body: Record<string, unknown>): { plat?: string; prix?: string } {
-  // GHL envoie les champs custom sous "customData" ou directement à la racine
   const sources = [
     body.customData,
     body.formData,
@@ -50,7 +51,7 @@ export async function POST(
   const platTronque = plat.trim().substring(0, MAX_CHARS)
   const prixNettoye = String(prix).trim()
 
-  const { error } = await supabase
+  const { error } = await getSupabase()
     .from('stands')
     .update({
       plat: platTronque,
