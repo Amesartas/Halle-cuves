@@ -50,7 +50,7 @@ export async function POST(
   const platTronque = plat.trim().substring(0, MAX_CHARS)
   const prixNettoye = String(prix).trim()
 
-  const { error } = await getSupabase()
+  const { data, error } = await getSupabase()
     .from('stands')
     .update({
       plat: platTronque,
@@ -58,11 +58,16 @@ export async function POST(
       submitted_at: new Date().toISOString(),
     })
     .eq('token', token)
+    .select()
 
   if (error) {
     console.error(error)
     return NextResponse.json({ error: 'Erreur base de données' }, { status: 500 })
   }
 
-  return NextResponse.json({ success: true })
+  if (!data || data.length === 0) {
+    return NextResponse.json({ error: 'Token invalide', token }, { status: 404 })
+  }
+
+  return NextResponse.json({ success: true, stand: data[0].stand_name })
 }
