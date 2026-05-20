@@ -6,24 +6,23 @@ export const dynamic = 'force-dynamic'
 const MAX_CHARS = 60
 
 function extractFields(body: Record<string, unknown>): { plat?: string; prix?: string } {
-  const sources = [
-    body.customData,
-    body.formData,
-    body,
-  ].filter(Boolean) as Record<string, unknown>[]
+  const src = body as Record<string, string>
 
-  for (const src of sources) {
-    const plat =
-      (src['plat'] as string) ||
-      (src['plat_du_jour'] as string) ||
-      (src['Plat du jour'] as string)
-    const prix =
-      (src['prix'] as string) ||
-      (src['Prix'] as string)
-    if (plat || prix) return { plat, prix }
-  }
+  const plat =
+    src['plat'] ||
+    src['Plat de la semaine'] ||
+    src['Plat du jour'] ||
+    src['plat_du_jour'] ||
+    (body.customData as Record<string, string>)?.['plat']
 
-  return {}
+  const prix =
+    src['prix'] ||
+    src['Prixduplat'] ||
+    src['Prix du plat'] ||
+    src['Prix'] ||
+    (body.customData as Record<string, string>)?.['prix']
+
+  return { plat, prix }
 }
 
 export async function POST(
