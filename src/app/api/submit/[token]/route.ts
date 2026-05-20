@@ -43,7 +43,7 @@ export async function POST(
 
   if (!plat || !prix) {
     return NextResponse.json(
-      { error: 'Champs "plat" et "prix" requis' },
+      { error: 'Champs "plat" et "prix" requis', received: body },
       { status: 400 }
     )
   }
