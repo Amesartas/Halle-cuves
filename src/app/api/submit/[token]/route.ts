@@ -75,5 +75,13 @@ export async function POST(
   }
 
   console.log('[submit] SAUVEGARDÉ:', data[0].stand_name, '| plat:', data[0].plat)
+
+  const { data: verify } = await getSupabase()
+    .from('stands')
+    .select('plat, prix')
+    .eq('token', token)
+    .single()
+  console.log('[submit] DB_VERIFY:', JSON.stringify(verify))
+
   return NextResponse.json({ success: true, stand: data[0].stand_name })
 }
