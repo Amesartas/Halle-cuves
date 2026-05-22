@@ -38,7 +38,11 @@ export async function POST(
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
   }
 
+  console.log('[submit] token:', token, '| body:', JSON.stringify(body))
+
   const { plat, prix } = extractFields(body)
+
+  console.log('[submit] plat:', plat, '| prix:', prix)
 
   if (!plat || !prix) {
     return NextResponse.json(
