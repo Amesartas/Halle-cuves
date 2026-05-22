@@ -31,6 +31,12 @@ export async function POST(
 ) {
   const { token } = params
 
+  const headers: Record<string, string> = {}
+  request.headers.forEach((v, k) => { headers[k] = v })
+  console.log('[submit] ===NEW REQUEST===')
+  console.log('[submit] token:', token)
+  console.log('[submit] headers:', JSON.stringify(headers))
+
   let body: Record<string, unknown>
   try {
     body = await request.json()
@@ -38,13 +44,14 @@ export async function POST(
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
   }
 
-  console.log('[submit] token:', token, '| body:', JSON.stringify(body))
+  console.log('[submit] body:', JSON.stringify(body))
 
   const { plat, prix } = extractFields(body)
 
-  console.log('[submit] plat:', plat, '| prix:', prix)
+  console.log('[submit] plat extrait:', JSON.stringify(plat), '| prix extrait:', JSON.stringify(prix))
 
   if (!plat || !prix) {
+    console.log('[submit] REJETÉ - champs manquants')
     return NextResponse.json(
       { error: 'Champs "plat" et "prix" requis', received: body },
       { status: 400 }
@@ -53,6 +60,21 @@ export async function POST(
 
   const platTronque = plat.trim().substring(0, MAX_CHARS)
   const prixNettoye = String(prix).trim()
+
+  if (!platTronque || !prixNettoye) {
+    console.log('[submit] REJETÉ - champs vides après trim | plat:', JSON.stringify(platTronque), '| prix:', JSON.stringify(prixNettoye))
+    return NextResponse.json(
+      { error: 'Champs vides après nettoyage', plat: platTronque, prix: prixNettoye },
+      { status: 400 }
+    )
+  }
+
+  const { data: current } = await getSupabase()
+    .from('stands')
+    .select('stand_name, plat, prix, submitted_at')
+    .eq('token', token)
+    .single()
+  console.log('[submit] AVANT mise à jour:', JSON.stringify(current))
 
   const { data, error } = await getSupabase()
     .from('stands')
@@ -75,13 +97,5 @@ export async function POST(
   }
 
   console.log('[submit] SAUVEGARDÉ:', data[0].stand_name, '| plat:', data[0].plat)
-
-  const { data: verify } = await getSupabase()
-    .from('stands')
-    .select('plat, prix')
-    .eq('token', token)
-    .single()
-  console.log('[submit] DB_VERIFY:', JSON.stringify(verify))
-
   return NextResponse.json({ success: true, stand: data[0].stand_name })
 }
