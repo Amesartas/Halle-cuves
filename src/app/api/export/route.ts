@@ -45,13 +45,20 @@ export async function GET() {
   XLSX.utils.book_append_sheet(wb, ws, 'Menu de la semaine')
 
   const buffer = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' })
-  const today = new Date().toISOString().split('T')[0]
+  const now = new Date().toLocaleString('fr-FR', {
+    timeZone: 'Europe/Paris',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).replace(/[/:]/g, '-').replace(', ', '_').replace(' ', '')
 
   return new NextResponse(buffer, {
     headers: {
       'Content-Type':
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      'Content-Disposition': `attachment; filename="menus-halle-${today}.xlsx"`,
+      'Content-Disposition': `attachment; filename="menus-halle-${now}.xlsx"`,
       'Cache-Control': 'no-store',
     },
   })
