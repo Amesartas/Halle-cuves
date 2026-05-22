@@ -14,7 +14,8 @@ export async function GET() {
     return NextResponse.json({ error: error.message, code: error.code }, { status: 500 })
   }
 
-  console.log('[export] rows fetched:', data?.length, '| first:', JSON.stringify(data?.[0]))
+  const breakRow = data?.find(r => r.stand_name === 'Break')
+  console.log('[export] rows fetched:', data?.length, '| Break:', JSON.stringify(breakRow))
 
   const rows = (data ?? []).map((row) => ({
     Stand: row.stand_name,
