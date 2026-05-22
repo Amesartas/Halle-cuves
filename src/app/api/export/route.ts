@@ -14,6 +14,8 @@ export async function GET() {
     return NextResponse.json({ error: error.message, code: error.code }, { status: 500 })
   }
 
+  console.log('[export] rows fetched:', data?.length, '| first:', JSON.stringify(data?.[0]))
+
   const rows = (data ?? []).map((row) => ({
     Stand: row.stand_name,
     'Plat du jour': row.plat ?? '—',
