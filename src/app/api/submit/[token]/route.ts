@@ -65,13 +65,15 @@ export async function POST(
     .select()
 
   if (error) {
-    console.error(error)
+    console.error('[submit] ERREUR SUPABASE:', JSON.stringify(error))
     return NextResponse.json({ error: 'Erreur base de données' }, { status: 500 })
   }
 
   if (!data || data.length === 0) {
+    console.error('[submit] TOKEN INTROUVABLE:', token)
     return NextResponse.json({ error: 'Token invalide', token }, { status: 404 })
   }
 
+  console.log('[submit] SAUVEGARDÉ:', data[0].stand_name, '| plat:', data[0].plat)
   return NextResponse.json({ success: true, stand: data[0].stand_name })
 }
