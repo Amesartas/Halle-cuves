@@ -52,6 +52,7 @@ export async function GET() {
       'Content-Type':
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       'Content-Disposition': `attachment; filename="menus-halle-${today}.xlsx"`,
+      'Cache-Control': 'no-store',
     },
   })
 }
